@@ -1,3 +1,8 @@
+// Функция для перенаправления на страницу логина
+function redirectToLogin() {
+    window.location.href = "login.html";
+}
+
 // Функция для отправки запроса на сервер
 function sendData(url, data, callback) {
     var xhr = new XMLHttpRequest();
@@ -49,7 +54,8 @@ function register(event) {
                 document.getElementById("message").textContent = result.error;
             } else {
                 document.getElementById("message").textContent = result.message;
-                // Перенаправление на другую страницу или выполнение других действий после успешной регистрации
+                // Перенаправление на страницу логина после успешной регистрации
+                redirectToLogin();
             }
         }
     });

@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 import json
 import mysql.connector
-
+import ssl
 app = Flask(__name__)
 
 # Загрузка конфигурации из файла config.json
@@ -15,8 +15,10 @@ db_connection = mysql.connector.connect(
     host=config['mysql_host'],
     user=config['mysql_user'],
     password=config['mysql_password'],
-    database=config['mysql_database']
+    database=config['mysql_database'],
+    auth_plugin='mysql_native_password'
 )
+
 db_cursor = db_connection.cursor()
 
 # Создание таблицы пользователей, если она не существует
@@ -77,6 +79,11 @@ def login():
     return jsonify({'message': 'Login successful'}), 200
 
 if __name__ == '__main__':
-    # Включение поддержки HTTPS
-    context = (config['ssl_certificate'], config['ssl_key'])
-    app.run(debug=config['debug'], ssl_context=context)
+
+    # Создание объекта контекста SSL
+    ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    ssl_context.load_cert_chain(config['ssl_certificate'], keyfile=config['ssl_key'])
+
+    # Запуск приложения Flask
+    app.run(debug=config['debug'], ssl_context=ssl_context)
+
